@@ -10,7 +10,7 @@
 | Captain     |   yanzelu2@illinois.edu  |
 | Member1     |      Ying Chen      |
 | Member1     |   yingc7@illinois.edu    |
-| Member2     |        runzhong li    |
+| Member2     |        Runzhong Li    |
 | Member2     |  rl17@illinois.edu |
 | Member3     |       Yichen Liu    |
 | Member3     | yichen32@illinois.edu  |
