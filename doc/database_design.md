@@ -1,7 +1,5 @@
 # Relational Schema:
 
----
-
 1. User(User_Id: INT [PK], Username: VARCHAR(30), Height: INT, Weight: INT, Age: INT, Prompt_Id: INT [FK to Prompt.Prompt_Id]) 
     - Since our software is dynamic and differs per user, user must be its own entity with characteristics of the user like height and weight
     - One-to-many relationship: user to meals through User_Id—user can have multiple non-unique meals. 
