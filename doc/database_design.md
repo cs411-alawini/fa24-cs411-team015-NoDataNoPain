@@ -6,7 +6,7 @@
     - One-to-many relationship: user to exercises through User_Id—user can have multiple non-uniqnue exercise sets
     - One-to-one relationship: user to reports (weekly), through the User_Id, and user to prompt via prompt_id, both are unique to a user and report is time based
 
-2. Meals(Meal_Id: INT [**PK**], User_Id: INT [**FK to User.User_Id**], Food: VARCHAR(30) [**FK to Food.FoodName**], Drink: VARCHAR(30) [**FK to Drinks.DrinkName**], Time: DATETIME)
+2. Meals(Meal_Id: INT [**PK**], User_Id: INT [**FK to User.User_Id**], FoodName: VARCHAR(30) [**FK to Food.FoodName**], DrinkName: VARCHAR(30) [**FK to Drinks.DrinkName**], Time: DATETIME)
     - Each meal is logged with details of many food and drink consumed at specific times, and can be referred to in the report, so it must be its own entity. 
     - One-to-many relationship: to food via FoodName—many food can be included in one meal
     - One-to-many relationship: to drink via DrinkName, similar to food
