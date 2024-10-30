@@ -12,15 +12,15 @@
     - One-to-many relationship: to drink via DrinkName, similar to food
     - Many-to-one relationship: to user through User_Id—one meal can be assigned to a user multiple times
 
-3. Exercises(Exercise_Id: INT [**PK**], User_Id: INT [**FK to User.User_Id**], Exercise_Name: VARCHAR(30), Reps: INT, Sets: INT, Time: TIME)
+3. Exercises(Exercise_Id: INT [**PK**], User_Id: INT [**FK to User.User_Id**], Exercise_Name: VARCHAR(100), Reps: INT, Sets: INT, Time: TIME)
     - Each exercise contains many attributes such as reps, sets, and the time required, so it must be its own entity. 
     - Many-to-one relationship: to user via User_Id
 
-4. Food(FoodName: VARCHAR(30) [**PK**], Meal_Id: INT [**FK to User.User_Id**], Nutrition_Type: VARCHAR(30), Calories_Per_Gram: INT, Quantity: INT)
+4. Food(FoodName: VARCHAR(30) [**PK**], Meal_Id: INT [**FK to User.User_Id**], Nutrition_Type: VARCHAR(100), Calories_Per_Gram: INT, Quantity: INT)
     - Each solid food contains nutritional info and a quantity, so it is its own entity
     - Many-to-one relationship: to meals via FoodName. 
 
-5. Drinks(DrinkName: VARCHAR(30) [**PK**], Meal_Id: INT [**FK to User.User_Id**], Nutrition_Type: VARCHAR(30), Calories_Per_Gram: INT, Quantity: INT)
+5. Drinks(DrinkName: VARCHAR(30) [**PK**], Meal_Id: INT [**FK to User.User_Id**], Nutrition_Type: VARCHAR(100), Calories_Per_Gram: INT, Quantity: INT)
     - Each drink contains nutritional info and a quantity, so it is its own entity
     - Many-to-one relationship: to meals via DrinkName
 
