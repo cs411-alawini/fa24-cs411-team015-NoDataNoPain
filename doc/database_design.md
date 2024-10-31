@@ -54,19 +54,19 @@ In conclusion, in each of the tables, every non-prime attribute depends only on 
 
 Tables:
 1. User
-    - CREATE TABLE User (UserId INT, UserName VARCHAR(30), Height INT, Weight INT, Age INT, PRIMARY KEY (UserId));
+    - CREATE TABLE User (UserId INT, UserName VARCHAR(100), Height INT, Weight INT, Age INT, PRIMARY KEY (UserId));
   
 2. Meals
     - CREATE TABLE Meals (MealId INT, UserId INT, Time DATETIME, PRIMARY KEY (MealId), FOREIGN KEY (UserId) REFERENCES User(UserId));
   
 3. Exercises
-    - CREATE TABLE Exercises (ExerciseId INT, UserId INT, ExerciseName VARCHAR(30), Reps INT, Sets INT, Time DATETIME, PRIMARY KEY (ExerciseId), FOREIGN KEY (UserId) REFERENCES User(UserId));
+    - CREATE TABLE Exercises (ExerciseId INT, UserId INT, ExerciseName VARCHAR(100), Reps INT, Sets INT, Time DATETIME, PRIMARY KEY (ExerciseId), FOREIGN KEY (UserId) REFERENCES User(UserId));
   
 4. Food
-    - CREATE TABLE Food (FoodName VARCHAR(30), MealId INT, NutritionType VARCHAR(30), CaloriesPerGram INT, Quantity INT, PRIMARY KEY (FoodName), FOREIGN KEY (MealId) REFERENCES Meals(MealId));
+    - CREATE TABLE Food (FoodName VARCHAR(30), MealId INT, NutritionType VARCHAR(100), CaloriesPerGram INT, Quantity INT, PRIMARY KEY (FoodName), FOREIGN KEY (MealId) REFERENCES Meals(MealId));
   
 5. Drinks
-    - CREATE TABLE Drink (DrinkName VARCHAR(30), MealId INT, NutritionType VARCHAR(30), CaloriesPerGram INT, Quantity INT, PRIMARY KEY (DrinkName), FOREIGN KEY (MealId) REFERENCES Meals(MealId));
+    - CREATE TABLE Drink (DrinkName VARCHAR(30), MealId INT, NutritionType VARCHAR(100), CaloriesPerGram INT, Quantity INT, PRIMARY KEY (DrinkName), FOREIGN KEY (MealId) REFERENCES Meals(MealId));
   
 6. Prompt
     - CREATE TABLE Prompt (PromptId INT, UserId INT, Description VARCHAR(300), PRIMARY KEY (PromptId), FOREIGN KEY (UserId) REFERENCES User(UserId));
