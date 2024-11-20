@@ -1,12 +1,22 @@
 import express from 'express';
 import cors from 'cors';
-import fetch from 'node-fetch'; // Use import for node-fetch
+import fetch from 'node-fetch'; 
+import mysql from "mysql2/promise";
 
 const app = express();
 const PORT = 5001;
 
 app.use(cors()); // Enable CORS for all requests
 app.use(express.json());
+
+
+const pool = mysql.createPool({
+  host: "cs411-final-project-440018:us-central1:fitness-sqldatabase",
+  user: "root",    // Replace with your database username
+  password: "",// Replace with your database password
+  database: "fitness-sqldatabase",// Replace with your database name
+  port: 5001,               // MySQL default port
+});
 
 // Proxy route for ZenQuotes API
 app.get("/api/quote", async (req, res) => {
@@ -20,30 +30,28 @@ app.get("/api/quote", async (req, res) => {
   }
 });
 
-const updateData = (id, newData) => {
-  console.log(`Updating record with ID: ${id}, new data:`, newData);
-  return {
-    message: "Data updated successfully",
-    updatedId: id,
-    updatedData: newData,
-  };
-};
+// const updateData = (id, newData) => {
+//   console.log(`Updating record with ID: ${id}, new data:`, newData);
+//   return {
+//     message: "Data updated successfully",
+//     updatedId: id,
+//     updatedData: newData,
+//   };
+// };
 
-
-app.post("/api/update", (req, res) => {
+app.post("/api/data", async (req, res) => {
   try {
-    const { id, newData } = req.body;
+    const { query } = req.body; // Accept SQL query from the request body
 
-    if (!id || !newData) {
-      return res.status(400).json({ error: "Missing required fields: id and newData" });
+    if (!query) {
+      return res.status(400).json({ error: "No query provided" });
     }
 
-    // Call the updateData function
-    const result = updateData(id, newData);
-    res.status(200).json(result);
+    const [rows] = await pool.query(query); 
+    res.status(200).json(rows);            
   } catch (error) {
-    console.error("Error handling POST request:", error);
-    res.status(500).json({ error: "Failed to update data" });
+    console.error("Error fetching data from SQL:", error);
+    res.status(500).json({ error: "Failed to fetch data from SQL" });
   }
 });
 
