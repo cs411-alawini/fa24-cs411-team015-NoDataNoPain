@@ -33,7 +33,7 @@ const Dashboard = () => {
     };
 
     fetchQuote();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []); 
 
   return (
     <div className="dashboard">
