@@ -1,0 +1,252 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent scrolling */
+}
+
+/* Header */
+.header {
+  flex-shrink: 0; /* Prevent header from shrinking */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Main Content */
+.content {
+  display: flex;
+  flex: 1; /* Take remaining vertical space */
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden; /* Prevent scrolling in main content */
+}
+
+/* Meals Section */
+.meals {
+  flex: 4; /* Increase width to take more space */
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content to the top */
+  overflow: hidden; /* Prevent internal scrolling */
+}
+
+.meals h3 {
+  font-size: 1.5rem; /* Slightly larger title */
+  font-weight: bold;
+  margin-bottom: 1rem; /* Add space below the "Meals" title */
+  text-align: center;
+  border-bottom: 1px solid #ddd; /* Optional: Divider for "Meals" title */
+  padding-bottom: 0.5rem;
+}
+
+/* Main Content */
+.content {
+  display: flex;
+  flex: 1; /* Take remaining vertical space */
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden; /* Prevent scrolling in main content */
+}
+
+/* Left Side (Meals and Exercises) */
+.left-side {
+  flex: 4; /* Take 60% of the width */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Meals Section */
+.meals {
+  flex: 2; /* Meals take 2/3 of the height */
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content to the top */
+  overflow: hidden; /* Prevent internal scrolling */
+}
+
+.meals h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.meals-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Individual Meal Box */
+.meal-section {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align content to the top */
+  align-items: flex-start; /* Align items horizontally to the left */
+}
+
+.meal-section h5 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0; /* Remove default margin */
+  padding: 0.5rem 0; /* Add equal padding above and below */
+  text-align: center; /* Ensure the title is centered */
+}
+
+.meal-section ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-align: left;
+  width: 100%;
+}
+
+.meal-section li {
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+}
+
+/* Exercises Section */
+.exercises {
+  flex: 1; /* Exercises take 1/3 of the height */
+  background: #f9f9f9;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Align items vertically */
+  align-items: center; /* Center content horizontally */
+  text-align: center;
+}
+
+/* Right Sidebar (Calendar, Weather, Calories, Quote) */
+.sidebar {
+  flex: 2; /* Take 40% of the width */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%; /* Full height of the page */
+}
+
+.module-box {
+  flex: 1; /* Equal height for all sidebar elements */
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
+}
+
+/* Exercises Section */
+.exercises {
+  flex: 1; /* Exercises take 1/3 of the height */
+  background: #f9f9f9;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.exercises h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Workout Container for Side-by-Side Boxes */
+.workout-container {
+  display: flex;
+  justify-content: space-between; /* Spread workout boxes evenly */
+  gap: 1rem; /* Add spacing between workout boxes */
+}
+
+/* Individual Workout Boxes */
+.workout-section {
+  flex: 1; /* Equal width for each workout box */
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+}
+
+.workout-section h5 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0; /* Remove default margin */
+  padding: 0.5rem 0; /* Add equal padding above and below */
+  text-align: center; /* Ensure the title is centered */
+}
+
+.workout-section p {
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+}
+
+
+/* Progress Bar */
+.progress-container {
+  height: 8px; /* Reduced height */
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .meals, .sidebar {
+    flex: 1 1 100%;
+  }
+
+  .meals-container {
+    flex-direction: column;
+  }
+}
