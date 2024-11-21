@@ -1,60 +1,63 @@
 import express from 'express';
 import cors from 'cors';
-import fetch from 'node-fetch'; 
-import mysql from "mysql2/promise";
+import mysql from 'mysql2/promise'; 
+import dotenv from 'dotenv';
+import axios from 'axios';
+
+dotenv.config();
 
 const app = express();
-const PORT = 5001;
+app.use(cors());
 
-app.use(cors()); // Enable CORS for all requests
-app.use(express.json());
-
-
-const pool = mysql.createPool({
-  host: "cs411-final-project-440018:us-central1:fitness-sqldatabase",
-  user: "root",    // Replace with your database username
-  password: "",// Replace with your database password
-  database: "fitness-sqldatabase",// Replace with your database name
-  port: 5001,               // MySQL default port
+const connection = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME, 
 });
 
-// Proxy route for ZenQuotes API
-app.get("/api/quote", async (req, res) => {
-  try {
-    const response = await fetch("https://quote-garden.onrender.com/api/v3/quotes/random");
-    const data = await response.json();
-    res.json(data); // Send the response to the frontend
-  } catch (error) {
-    console.error("Error fetching quote:", error);
-    res.status(500).json({ error: "Failed to fetch quote" });
-  }
-});
-
-// const updateData = (id, newData) => {
-//   console.log(`Updating record with ID: ${id}, new data:`, newData);
-//   return {
-//     message: "Data updated successfully",
-//     updatedId: id,
-//     updatedData: newData,
-//   };
-// };
-
-app.post("/api/data", async (req, res) => {
-  try {
-    const { query } = req.body; // Accept SQL query from the request body
-
-    if (!query) {
-      return res.status(400).json({ error: "No query provided" });
+app.get('/api/random-quote', async (req, res) => {
+    try {
+        const response = await axios.get('https://quotes-api-self.vercel.app/quote');
+        res.json(response.data); 
+    } catch (error) {
+        console.error('Error fetching the random quote:', error);
+        res.status(500).send('An error occurred while fetching the random quote.');
     }
+});
 
-    const [rows] = await pool.query(query); 
-    res.status(200).json(rows);            
+app.get("/api/exercises", async (req, res) => {
+  try {
+    const query = `
+      SELECT ExerciseName, Reps, Time
+      FROM Exercises
+      ORDER BY RAND()
+      LIMIT 3; -- Randomly select 3 rows
+    `;
+    const [rows] = await connection.query(query);
+    res.json(rows);
   } catch (error) {
-    console.error("Error fetching data from SQL:", error);
-    res.status(500).json({ error: "Failed to fetch data from SQL" });
+    console.error("Error fetching exercises:", error);
+    res.status(500).send("Database query failed");
   }
 });
 
+app.get("/api/foodrink", async (req, res) => {
+  try {
+    const foodQuery = `SELECT FoodName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Food ORDER BY RAND() LIMIT 2;`;
+    const [food] = await connection.query(foodQuery);
+
+    const drinkQuery = `SELECT DrinkName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Drink ORDER BY RAND() LIMIT 1;`;
+    const [drink] = await connection.query(drinkQuery);
+
+    res.json({ food, drink }); 
+  } catch (error) {
+    console.error("Error fetching food and drinks:", error);
+    res.status(500).send("Database query failed");
+  }
+});
+
+const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

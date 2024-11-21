@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./Dashboard.css";
 
 const today = new Date();
@@ -10,34 +11,60 @@ const formattedDate = today.toLocaleDateString("en-US", {
 });
 
 const Dashboard = () => {
-  const [quote, setQuote] = useState("Every day is a fresh start."); // Default quote
-  const [author, setAuthor] = useState(""); // Default author
+  const [quote, setQuote] = useState(null);
+  const [author, setAuthor] = useState(null);
+
+  const [exercises, setExercises] = useState([]);
+  const [meals, setMeals] = useState({
+    breakfast: { food: [], drink: [] },
+    lunch: { food: [], drink: [] },
+    dinner: { food: [], drink: [] },
+  });
 
   useEffect(() => {
-    const fetchQuote = async () => {
+    const fetchData = async () => {
       try {
-        // Fetch quote from your backend server
-        const response = await fetch("http://localhost:5001/api/quote");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Fetch quote
+        const quoteResponse = await fetch("http://localhost:5001/api/random-quote");
+        if (!quoteResponse.ok) {
+          throw new Error(`HTTP error! status: ${quoteResponse.status}`);
         }
+        const quoteData = await quoteResponse.json(); 
+        setQuote(quoteData.quote);
+        setAuthor(quoteData.author);
 
-        const data = await response.json();
-        if (data && data.data) {
-          setQuote(data.data[0].quoteText.trim()); 
-          setAuthor(data.data[0].quoteAuthor); 
+        // Fetch exercises
+        const exercisesResponse = await fetch("http://localhost:5001/api/exercises");
+        if (!exercisesResponse.ok) {
+          throw new Error(`HTTP error! status: ${exercisesResponse.status}`);
         }
+        const exercisesData = await exercisesResponse.json(); 
+        setExercises(exercisesData);
+
+        // Fetch meals
+        const fetchMeal = async () => {
+          const mealResponse = await fetch("http://localhost:5001/api/foodrink");
+          if (!mealResponse.ok) {
+            throw new Error(`HTTP error! status: ${mealResponse.status}`);
+          }
+          return mealResponse.json();
+        };
+
+        const breakfast = await fetchMeal();
+        const lunch = await fetchMeal();
+        const dinner = await fetchMeal();
+
+        setMeals({ breakfast, lunch, dinner });
       } catch (error) {
-        console.error("Error fetching the quote:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchQuote();
-  }, []); 
+    fetchData();
+  }, []);
 
   return (
     <div className="dashboard">
-      {/* Header */}
       <header className="header">
         <div className="profile">
           <span className="profile-icon">👤</span>
@@ -45,68 +72,75 @@ const Dashboard = () => {
         </div>
         <div className="menu-icon">☰</div>
       </header>
-
-      {/* Main Content */}
       <div className="content">
-        {/* Left Side: Meals and Exercises */}
         <div className="left-side">
-          {/* Meals Section */}
           <div className="meals">
             <h3>Meals</h3>
             <div className="meals-container">
               <div className="meal-section">
                 <h5>🍳 Breakfast</h5>
                 <ul>
-                  <li>Egg (70 kcal, 2 pcs)</li>
-                  <li>Milk (100 kcal, 1 cup)</li>
-                  <li>Bread (80 kcal, 2 slices)</li>
+                  {meals.breakfast.food.map((item, index) => (
+                    <li key={index}>
+                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
+                  {meals.breakfast.drink.map((item, index) => (
+                    <li key={index}>
+                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
                 </ul>
               </div>
               <div className="meal-section">
                 <h5>🥗 Lunch</h5>
                 <ul>
-                  <li>Chipotle (600 kcal, 1 bowl)</li>
-                  <li>Orange Juice (120 kcal, 1 glass)</li>
+                  {meals.lunch.food.map((item, index) => (
+                    <li key={index}>
+                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
+                  {meals.lunch.drink.map((item, index) => (
+                    <li key={index}>
+                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
                 </ul>
               </div>
               <div className="meal-section">
                 <h5>🍽 Dinner</h5>
                 <ul>
-                  <li>Caesar Salad (200 kcal, 1 plate)</li>
-                  <li>Protein Drink (150 kcal, 1 shake)</li>
+                  {meals.dinner.food.map((item, index) => (
+                    <li key={index}>
+                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
+                  {meals.dinner.drink.map((item, index) => (
+                    <li key={index}>
+                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
           </div>
-
-          {/* Exercises Section */}
           <div className="exercises">
             <h3>Workout of the Day 💪</h3>
             <div className="workout-container">
-              <div className="workout-section">
-                <h5>Bench Press</h5>
-                <p>Reps: 10x3</p>
-                <p>Time: 15 min</p>
-              </div>
-              <div className="workout-section">
-                <h5>Push-Ups</h5>
-                <p>Reps: 20x2</p>
-                <p>Time: 10 min</p>
-              </div>
-              <div className="workout-section">
-                <h5>Dips</h5>
-                <p>Reps: 15x3</p>
-                <p>Time: 12 min</p>
-              </div>
+              {exercises.slice(0, 3).map((exercise, index) => (
+                <div key={index} className="workout-section">
+                  <h5>{exercise.ExerciseName}</h5>
+                  <p>Reps: {exercise.Reps}</p>
+                  <p>Time: {exercise.Time} minutes</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
-        {/* Sidebar */}
         <aside className="sidebar">
           <div className="module-box">
             <h4>📅 Calendar</h4>
-            <p>{formattedDate}</p> {/* Display formatted date */}
+            <p>{formattedDate}</p>
           </div>
           <div className="module-box">
             <h4>☀️ Weather</h4>
@@ -125,8 +159,14 @@ const Dashboard = () => {
           </div>
           <div className="module-box">
             <h4>💡 Quote of the Day</h4>
-            <p>"{quote}"</p>
-            {author && <small>- {author}</small>}
+              {quote ? (
+                <p>
+                  "{quote}" <br />
+                  <strong>- {author}</strong>
+                </p>
+              ) : (
+                <p>You miss 100% of the shots you don't take</p>
+              )}
           </div>
         </aside>
       </div>
