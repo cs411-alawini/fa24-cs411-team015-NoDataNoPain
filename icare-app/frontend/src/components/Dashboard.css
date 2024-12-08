@@ -236,6 +236,41 @@ body {
   transition: width 0.3s ease;
 }
 
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-breakfast-btn, .add-lunch-btn, .add-dinner-btn, .add-exercise-btn {
+  margin-left: 8px;
+  width: 20px; 
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background-color: #000000;
+  border: none;
+}
+
+.add-breakfast-btn, .add-lunch-btn, .add-dinner-btn, .add-exercise-btn i {
+  font-size: 10px; /* Adjust the size of the icon */
+  color: white; /* Icon color */
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .content {
