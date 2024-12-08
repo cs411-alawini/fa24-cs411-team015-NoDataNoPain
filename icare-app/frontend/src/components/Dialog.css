@@ -1,0 +1,59 @@
+/* Dialog overlay styling */
+.dialog-overlay {
+    position: fixed; /* Fixed to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex; /* Center the dialog */
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
+    z-index: 1000; /* Place above other content */
+  }
+  
+  /* Dialog box styling */
+  .dialog-box {
+    background: white; /* Dialog background */
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Add a shadow for focus */
+    width: 90%; /* Responsive width */
+    max-width: 400px; /* Limit the maximum size */
+    text-align: center;
+    z-index: 1001; /* Ensure it's above the overlay */
+  }
+  
+  .dialog-box label {
+    display: block;
+    margin: 10px 0;
+  }
+  
+  .dialog-box input,
+  .dialog-box select {
+    width: 90%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .dialog-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .dialog-buttons .btn {
+    padding: 8px 16px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dialog-buttons .btn:hover {
+    background-color: #000000;
+  }

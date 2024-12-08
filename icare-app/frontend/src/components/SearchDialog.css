@@ -1,0 +1,62 @@
+/* Overlay styling for the search dialog */
+.search-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Above other elements */
+  }
+  
+  /* Search dialog box styling */
+  .search-dialog-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Shadow for focus */
+    width: 90%;
+    max-width: 400px; /* Responsive size */
+    text-align: center;
+    z-index: 1001;
+  }
+  
+  .search-dialog-box label {
+    display: block;
+    margin: 10px 0;
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  .search-dialog-box select,
+  .search-dialog-box input {
+    width: 90%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .search-dialog-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  /* Button styling */
+  .search-dialog-buttons .btn {
+    padding: 8px 16px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .search-dialog-buttons .btn:hover {
+    background-color: #000000;
+  }

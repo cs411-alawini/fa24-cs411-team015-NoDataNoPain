@@ -1,0 +1,44 @@
+/* Overlay styling for the result dialog */
+.result-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Above other elements */
+  }
+  
+  /* Result dialog box styling */
+  .result-dialog-box {
+    background: white; /* White background for dialog */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Shadow for focus */
+    width: 90%;
+    max-width: 400px; /* Max size for responsiveness */
+    text-align: center;
+    z-index: 1001;
+  }
+  
+  .result-dialog-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .result-dialog-buttons .btn {
+    padding: 10px 20px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .result-dialog-buttons .btn:hover {
+    background-color: #000000;
+  }
