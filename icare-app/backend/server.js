@@ -115,15 +115,40 @@ app.get("/api/exercises", async (req, res) => {
   }
 });
 
+// app.get("/api/foodrink", async (req, res) => {
+//   try {
+//     const foodQuery = `SELECT FoodName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Food ORDER BY RAND() LIMIT 2;`;
+//     const [food] = await connection.query(foodQuery);
+
+//     const drinkQuery = `SELECT DrinkName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Drink ORDER BY RAND() LIMIT 1;`;
+//     const [drink] = await connection.query(drinkQuery);
+
+//     res.json({ food, drink }); 
+//   } catch (error) {
+//     console.error("Error fetching food and drinks:", error);
+//     res.status(500).send("Database query failed");
+//   }
+// });
+
 app.get("/api/foodrink", async (req, res) => {
   try {
-    const foodQuery = `SELECT FoodName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Food ORDER BY RAND() LIMIT 2;`;
-    const [food] = await connection.query(foodQuery);
+    const foodQuery = `
+      SELECT FoodName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal 
+      FROM Food 
+      ORDER BY RAND() 
+      LIMIT 2;
+    `;
+    const drinkQuery = `
+      SELECT DrinkName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal 
+      FROM Drink 
+      ORDER BY RAND() 
+      LIMIT 1;
+    `;
 
-    const drinkQuery = `SELECT DrinkName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Drink ORDER BY RAND() LIMIT 1;`;
+    const [food] = await connection.query(foodQuery);
     const [drink] = await connection.query(drinkQuery);
 
-    res.json({ food, drink }); 
+    res.json({ food, drink });
   } catch (error) {
     console.error("Error fetching food and drinks:", error);
     res.status(500).send("Database query failed");

@@ -9,7 +9,6 @@ import WorkoutDialog from "./WorkoutDialog";
 import SearchDialog from "./SearchDialog";
 import ResultDialog from "./ResultDialog";
 
-
 const today = new Date();
 const formattedDate = today.toLocaleDateString("en-US", {
   weekday: "long",
@@ -25,6 +24,7 @@ const Dashboard = () => {
   const [isWorkoutDialogVisible, setIsWorkoutDialogVisible] = useState(false);
   const [userInput, setUserInput] = useState(null);
   const [workoutInput, setWorkoutInput] = useState(null);
+  const [currentMealType, setCurrentMealType] = useState(null);
   const [isSearchDialogVisible, setIsSearchDialogVisible] = useState(false);
   const [isResultDialogVisible, setIsResultDialogVisible] = useState(false);
   const [searchData, setSearchData] = useState(null);
@@ -36,7 +36,16 @@ const Dashboard = () => {
     dinner: { food: [], drink: [] },
   });
 
-  const showDialog = () => setIsDialogVisible(true);
+  const [recommendations, setRecommendations] = useState({
+    breakfast: [],
+    lunch: [],
+    dinner: [],
+  });
+
+  const showDialog = (mealType) => {
+    setCurrentMealType(mealType);
+    setIsDialogVisible(true);
+  };
   const closeDialog = () => setIsDialogVisible(false);
 
   const showWorkoutDialog = () => setIsWorkoutDialogVisible(true);
@@ -49,62 +58,118 @@ const Dashboard = () => {
   const closeResultDialog = () => setIsResultDialogVisible(false);
 
   const handleUserInput = async (data) => {
-    console.log("Data received in Dashboard from Dialog:", data); 
+    const mealType = currentMealType;
+    if (!mealType || !meals[mealType]) {
+      alert("Invalid meal type.");
+      return;
+    }
+
+    const updatedData = { ...data, mealType };
 
     try {
-      const response = await axios.post("http://localhost:5001/api/add-item", data); 
-      console.log("Server response:", response.data); 
+      const response = await axios.post("http://localhost:5001/api/add-item", updatedData);
+      if (data.selection === "Food") {
+        setMeals((prevMeals) => ({
+          ...prevMeals,
+          [mealType]: {
+            ...prevMeals[mealType],
+            food: [
+              ...prevMeals[mealType].food,
+              {
+                FoodName: data.name,
+                CaloriesTotal: data.calories,
+                Quantity: data.qty,
+              },
+            ],
+          },
+        }));
+      } else if (data.selection === "Drink") {
+        setMeals((prevMeals) => ({
+          ...prevMeals,
+          [mealType]: {
+            ...prevMeals[mealType],
+            drink: [
+              ...prevMeals[mealType].drink,
+              {
+                DrinkName: data.name,
+                CaloriesTotal: data.calories,
+                Quantity: data.qty,
+              },
+            ],
+          },
+        }));
+      }
     } catch (error) {
-      console.error("Error adding item:", error.response?.data || error.message); 
-      alert("Failed to add item to the server.");
+      alert("Failed to add item to the server. Displaying locally anyway.");
+      if (data.selection === "Food") {
+        setMeals((prevMeals) => ({
+          ...prevMeals,
+          [mealType]: {
+            ...prevMeals[mealType],
+            food: [
+              ...prevMeals[mealType].food,
+              {
+                FoodName: data.name,
+                CaloriesTotal: data.calories,
+                Quantity: data.qty,
+              },
+            ],
+          },
+        }));
+      } else if (data.selection === "Drink") {
+        setMeals((prevMeals) => ({
+          ...prevMeals,
+          [mealType]: {
+            ...prevMeals[mealType],
+            drink: [
+              ...prevMeals[mealType].drink,
+              {
+                DrinkName: data.name,
+                CaloriesTotal: data.calories,
+                Quantity: data.qty,
+              },
+            ],
+          },
+        }));
+      }
     }
   };
 
   const handleWorkoutInput = (input) => {
     setWorkoutInput(input);
-    console.log("Workout input:", input);
   };
 
   const handleSearch = (data) => {
     setSearchData(data);
-    closeSearchDialog(); // Close the search dialog
-    showResultDialog(); // Show the result dialog
+    closeSearchDialog();
+    showResultDialog();
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch quote
         const quoteResponse = await fetch("http://localhost:5001/api/random-quote");
-        if (!quoteResponse.ok) {
-          throw new Error(`HTTP error! status: ${quoteResponse.status}`);
+        if (quoteResponse.ok) {
+          const quoteData = await quoteResponse.json();
+          setQuote(quoteData.quote);
+          setAuthor(quoteData.author);
         }
-        const quoteData = await quoteResponse.json(); 
-        setQuote(quoteData.quote);
-        setAuthor(quoteData.author);
 
-        // Fetch exercises
         const exercisesResponse = await fetch("http://localhost:5001/api/exercises");
-        if (!exercisesResponse.ok) {
-          throw new Error(`HTTP error! status: ${exercisesResponse.status}`);
+        if (exercisesResponse.ok) {
+          const exercisesData = await exercisesResponse.json();
+          setExercises(exercisesData);
         }
-        const exercisesData = await exercisesResponse.json(); 
-        setExercises(exercisesData);
 
-        // Fetch meals
-        const fetchMeal = async () => {
-          const mealResponse = await fetch("http://localhost:5001/api/foodrink");
-          if (!mealResponse.ok) {
-            throw new Error(`HTTP error! status: ${mealResponse.status}`);
-          }
-          return mealResponse.json();
-        };
+        const breakfastRecommendations = await axios.get("http://localhost:5001/api/recommend?meal=breakfast");
+        const lunchRecommendations = await axios.get("http://localhost:5001/api/recommend?meal=lunch");
+        const dinnerRecommendations = await axios.get("http://localhost:5001/api/recommend?meal=dinner");
 
-        const breakfast = await fetchMeal();
-        const lunch = await fetchMeal();
-        const dinner = await fetchMeal();
-
-        setMeals({ breakfast, lunch, dinner });
+        setRecommendations({
+          breakfast: breakfastRecommendations.data,
+          lunch: lunchRecommendations.data,
+          dinner: dinnerRecommendations.data,
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -133,19 +198,31 @@ const Dashboard = () => {
               <div className="meal-section">
                 <div className="header-container">
                   <h5>🍳 Breakfast</h5>
-                  <button className="add-breakfast-btn" onClick={showDialog}>
-                    <i className="fas fa-plus"></i> {/* FontAwesome icon */}
+                  <button className="add-breakfast-btn" onClick={() => showDialog('breakfast')}>
+                    <i className="fas fa-plus"></i>
                   </button>
                 </div>
+                {meals.breakfast.food.length === 0 && meals.breakfast.drink.length === 0 ? (
+                  <p>No items added yet. Use the "+" button to add.</p>
+                ) : (
+                  <ul>
+                    {meals.breakfast.food.map((item, index) => (
+                      <li key={index}>
+                        {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                    {meals.breakfast.drink.map((item, index) => (
+                      <li key={index}>
+                        {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <h6>Recommended:</h6>
                 <ul>
-                  {meals.breakfast.food.map((item, index) => (
+                  {recommendations.breakfast.map((item, index) => (
                     <li key={index}>
-                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
-                    </li>
-                  ))}
-                  {meals.breakfast.drink.map((item, index) => (
-                    <li key={index}>
-                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      {item.name} ({item.calories} kcal, {item.qty} units)
                     </li>
                   ))}
                 </ul>
@@ -153,20 +230,31 @@ const Dashboard = () => {
               <div className="meal-section">
                 <div className="header-container">
                   <h5>🥗 Lunch</h5>
-                  <button className="add-lunch-btn" onClick={showDialog}>
+                  <button className="add-lunch-btn" onClick={() => showDialog('lunch')}>
                     <i className="fas fa-plus"></i>
                   </button>
                 </div>
-                
+                {meals.lunch.food.length === 0 && meals.lunch.drink.length === 0 ? (
+                  <p>No items added yet. Use the "+" button to add.</p>
+                ) : (
+                  <ul>
+                    {meals.lunch.food.map((item, index) => (
+                      <li key={index}>
+                        {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                    {meals.lunch.drink.map((item, index) => (
+                      <li key={index}>
+                        {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <h6>Recommended:</h6>
                 <ul>
-                  {meals.lunch.food.map((item, index) => (
+                  {recommendations.lunch.map((item, index) => (
                     <li key={index}>
-                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
-                    </li>
-                  ))}
-                  {meals.lunch.drink.map((item, index) => (
-                    <li key={index}>
-                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      {item.name} ({item.calories} kcal, {item.qty} units)
                     </li>
                   ))}
                 </ul>
@@ -174,20 +262,31 @@ const Dashboard = () => {
               <div className="meal-section">
                 <div className="header-container">
                   <h5>🍽 Dinner</h5>
-                  <button className="add-dinner-btn" onClick={showDialog}>
+                  <button className="add-dinner-btn" onClick={() => showDialog('dinner')}>
                     <i className="fas fa-plus"></i>
                   </button>
                 </div>
-                
+                {meals.dinner.food.length === 0 && meals.dinner.drink.length === 0 ? (
+                  <p>No items added yet. Use the "+" button to add.</p>
+                ) : (
+                  <ul>
+                    {meals.dinner.food.map((item, index) => (
+                      <li key={index}>
+                        {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                    {meals.dinner.drink.map((item, index) => (
+                      <li key={index}>
+                        {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <h6>Recommended:</h6>
                 <ul>
-                  {meals.dinner.food.map((item, index) => (
+                  {recommendations.dinner.map((item, index) => (
                     <li key={index}>
-                      {item.FoodName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
-                    </li>
-                  ))}
-                  {meals.dinner.drink.map((item, index) => (
-                    <li key={index}>
-                      {item.DrinkName} ({item.CaloriesTotal} kcal, {item.Quantity} units)
+                      {item.name} ({item.calories} kcal, {item.qty} units)
                     </li>
                   ))}
                 </ul>
@@ -198,16 +297,15 @@ const Dashboard = () => {
             <div className="header-container">
               <h3>Workout of the Day 💪</h3>
               <button className="add-exercise-btn" onClick={showWorkoutDialog}>
-                <i className="fas fa-plus"></i> {/* FontAwesome icon */}
+                <i className="fas fa-plus"></i>
               </button>
             </div>
-            
             <div className="workout-container">
               {exercises.slice(0, 3).map((exercise, index) => (
                 <div key={index} className="workout-section">
                   <h5>{exercise.ExerciseName}</h5>
                   <p>Reps: {exercise.Reps}</p>
-                  <p>Time: {exercise.Time} </p>
+                  <p>Time: {exercise.Time}</p>
                 </div>
               ))}
             </div>
@@ -235,14 +333,14 @@ const Dashboard = () => {
           </div>
           <div className="module-box">
             <h4>💡 Quote of the Day</h4>
-              {quote ? (
-                <p>
-                  "{quote}" <br />
-                  <strong>- {author}</strong>
-                </p>
-              ) : (
-                <p>You miss 100% of the shots you don't take</p>
-              )}
+            {quote ? (
+              <p>
+                "{quote}" <br />
+                <strong>- {author}</strong>
+              </p>
+            ) : (
+              <p>You miss 100% of the shots you don't take</p>
+            )}
           </div>
         </aside>
       </div>
@@ -252,21 +350,18 @@ const Dashboard = () => {
         onClose={closeDialog}
         onSubmit={handleUserInput}
       />
-
       <WorkoutDialog
         title="Add Workout"
         isVisible={isWorkoutDialogVisible}
         onClose={closeWorkoutDialog}
         onSubmit={handleWorkoutInput}
       />
-
       <SearchDialog
         title="Search Meals or Workouts"
         isVisible={isSearchDialogVisible}
         onClose={closeSearchDialog}
         onSubmit={handleSearch}
       />
-
       <ResultDialog
         isVisible={isResultDialogVisible}
         onClose={closeResultDialog}
