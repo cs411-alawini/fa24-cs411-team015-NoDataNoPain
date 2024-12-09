@@ -8,6 +8,7 @@ import Dialog from "./Dialog";
 import WorkoutDialog from "./WorkoutDialog";
 import SearchDialog from "./SearchDialog";
 import ResultDialog from "./ResultDialog";
+import MealsDialog from "./MealsDialog";
 
 const today = new Date();
 const formattedDate = today.toLocaleDateString("en-US", {
@@ -28,6 +29,7 @@ const Dashboard = () => {
   const [isSearchDialogVisible, setIsSearchDialogVisible] = useState(false);
   const [isResultDialogVisible, setIsResultDialogVisible] = useState(false);
   const [searchData, setSearchData] = useState(null);
+  const [isMealsDialogVisible, setIsMealsDialogVisible] = useState(false);
 
   const [exercises, setExercises] = useState([]);
   const [meals, setMeals] = useState({
@@ -56,6 +58,9 @@ const Dashboard = () => {
 
   const showResultDialog = () => setIsResultDialogVisible(true);
   const closeResultDialog = () => setIsResultDialogVisible(false);
+
+  const showMealsDialog = () => setIsMealsDialogVisible(true);
+  const closeMealsDialog = () => setIsMealsDialogVisible(false);
 
   const handleUserInput = async (data) => {
     const mealType = currentMealType;
@@ -145,6 +150,11 @@ const Dashboard = () => {
     showResultDialog();
   };
 
+  const handleRemoveMeal = (index) => {
+    const updatedMeals = meals.filter((_, i) => i !== index);
+    setMeals(updatedMeals); // Update the meals list
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -188,7 +198,9 @@ const Dashboard = () => {
             🔍 Search
           </button>
         </div>
-        <div className="menu-icon">☰</div>
+        <button className="menu-icon" onClick={showMealsDialog}>
+          View All Meals
+        </button>
       </header>
       <div className="content">
         <div className="left-side">
@@ -366,6 +378,13 @@ const Dashboard = () => {
         isVisible={isResultDialogVisible}
         onClose={closeResultDialog}
         data={searchData}
+      />
+
+      <MealsDialog
+        isVisible={isMealsDialogVisible}
+        meals={meals}
+        onClose={closeMealsDialog}
+        onRemove={handleRemoveMeal}
       />
     </div>
   );

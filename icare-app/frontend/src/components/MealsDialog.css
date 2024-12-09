@@ -1,0 +1,94 @@
+/* Overlay styling for the meals dialog */
+.meals-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Above other elements */
+  }
+  
+  /* Meals dialog box styling */
+  .meals-dialog-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Shadow for focus */
+    width: 90%;
+    max-width: 400px; /* Max size for responsiveness */
+    text-align: center;
+    z-index: 1001;
+  }
+  
+  .meals-dialog-box h3 {
+    margin-top: 0;
+  }
+  
+  .meals-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .meal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .meal-item:last-child {
+    border-bottom: none;
+  }
+  
+  .remove-btn {
+    padding: 0.1px 7px;
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    border-radius: 360px;
+    cursor: pointer;
+  }
+  
+  .remove-btn:hover {
+    background-color: #d9363e;
+  }
+  
+  .meals-dialog-buttons .btn {
+    padding: 8px 16px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .meals-dialog-buttons .btn:hover {
+    background-color: #000000;
+  }
+
+  /* Header styling for meals dialog */
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-header h3 {
+  margin: 0;
+}
+
+/* "Remove All" button styling */
+.toggle-remove-btn {
+  padding: 5px 10px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
