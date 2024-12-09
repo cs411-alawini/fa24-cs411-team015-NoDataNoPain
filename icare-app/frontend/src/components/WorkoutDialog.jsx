@@ -5,6 +5,7 @@ const WorkoutDialog = ({ title, isVisible, onClose, onSubmit }) => {
   const [workoutName, setWorkoutName] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
+  const [time, setTime] = useState("");
 
   const handleSubmit = () => {
     const data = { workoutName, sets, reps };
@@ -12,6 +13,7 @@ const WorkoutDialog = ({ title, isVisible, onClose, onSubmit }) => {
     setWorkoutName("");
     setSets("");
     setReps("");
+    setTime("");
     onClose(); // Close the dialog
   };
 
@@ -57,6 +59,18 @@ const WorkoutDialog = ({ title, isVisible, onClose, onSubmit }) => {
               placeholder="Enter number of reps"
               value={reps}
               onChange={(e) => setReps(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Time (s):
+            <input
+              type="number"
+              placeholder="Enter time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
             />
           </label>
         </div>

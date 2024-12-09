@@ -9,6 +9,7 @@ import WorkoutDialog from "./WorkoutDialog";
 import SearchDialog from "./SearchDialog";
 import ResultDialog from "./ResultDialog";
 
+
 const today = new Date();
 const formattedDate = today.toLocaleDateString("en-US", {
   weekday: "long",
@@ -47,9 +48,16 @@ const Dashboard = () => {
   const showResultDialog = () => setIsResultDialogVisible(true);
   const closeResultDialog = () => setIsResultDialogVisible(false);
 
-  const handleUserInput = (input) => {
-    setUserInput(input); // Save the user input
-    console.log("User input:", input); // Log or handle the input
+  const handleUserInput = async (data) => {
+    console.log("Data received in Dashboard from Dialog:", data); 
+
+    try {
+      const response = await axios.post("http://localhost:5001/api/add-item", data); 
+      console.log("Server response:", response.data); 
+    } catch (error) {
+      console.error("Error adding item:", error.response?.data || error.message); 
+      alert("Failed to add item to the server.");
+    }
   };
 
   const handleWorkoutInput = (input) => {
@@ -199,7 +207,7 @@ const Dashboard = () => {
                 <div key={index} className="workout-section">
                   <h5>{exercise.ExerciseName}</h5>
                   <p>Reps: {exercise.Reps}</p>
-                  <p>Time: {exercise.Time} minutes</p>
+                  <p>Time: {exercise.Time} </p>
                 </div>
               ))}
             </div>

@@ -1,17 +1,34 @@
 import React, { useState } from "react";
 import "./SearchDialog.css"; // Custom CSS for SearchDialog
+import axios from "axios";
 
 const SearchDialog = ({ title, isVisible, onClose, onSubmit }) => {
   const [selection, setSelection] = useState("Meal");
   const [keyword, setKeyword] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const data = { selection, keyword };
-    onSubmit(data); // Pass data to the parent component
+
+    try {
+      const response = await axios.get(`http://localhost:5001/api/search`, {
+        params: data,
+      });
+
+      if (response.data && response.data.length > 0) {
+        onSubmit({ results: response.data, keyword }); 
+      } else {
+        onSubmit({ results: [{ message: "No results found" }], keyword }); 
+      }
+    } catch (error) {
+      console.error("Error submitting search:", error);
+      onSubmit({ results: [{ message: "Search error. Please try again." }], keyword }); 
+    }
+
     setSelection("Meal");
     setKeyword("");
-    onClose(); // Close the dialog
+    onClose(); // Close the SearchDialog
   };
+  
 
   if (!isVisible) return null;
 
