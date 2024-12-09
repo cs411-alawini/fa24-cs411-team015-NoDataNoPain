@@ -98,6 +98,29 @@ app.get('/api/random-quote', async (req, res) => {
     }
 });
 
+app.get('/api/weather', async (req, res) => {
+  try {
+    const weatherApiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=40.116399&longitude=-88.2434&current=temperature_2m,weather_code&timezone=America/Chicago&forecast_days=1';
+    
+    const response = await axios.get(weatherApiUrl);
+
+    const { current } = response.data;
+
+    if (current && current.temperature_2m !== undefined) {
+      res.json({
+        location: "Champaign, IL",
+        temperature: current.temperature_2m,
+      });
+    } else {
+      throw new Error('Missing temperature data in the weather API response.');
+    }
+  } catch (error) {
+    console.error('Error fetching weather data:', error.message || error);
+    res.status(500).send('An error occurred while fetching the weather data.');
+  }
+});
+
+
 app.get("/api/exercises", async (req, res) => {
   try {
     const query = `
@@ -115,20 +138,55 @@ app.get("/api/exercises", async (req, res) => {
   }
 });
 
-// app.get("/api/foodrink", async (req, res) => {
-//   try {
-//     const foodQuery = `SELECT FoodName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Food ORDER BY RAND() LIMIT 2;`;
-//     const [food] = await connection.query(foodQuery);
+app.get('/api/user-meals-details', async (req, res) => {
+  try {
+    const userId = 100052;
 
-//     const drinkQuery = `SELECT DrinkName, NutritionType, CaloriesPerGram, Quantity, CaloriesTotal FROM Drink ORDER BY RAND() LIMIT 1;`;
-//     const [drink] = await connection.query(drinkQuery);
+    if (!userId) {
+      return res.status(400).json({ error: 'Missing user_id parameter.' });
+    }
 
-//     res.json({ food, drink }); 
-//   } catch (error) {
-//     console.error("Error fetching food and drinks:", error);
-//     res.status(500).send("Database query failed");
-//   }
-// });
+    // Fetch all meal IDs for the user
+    const mealQuery = `
+      SELECT MealID
+      FROM Meals
+      WHERE UserID = ?;
+    `;
+    const [meals] = await connection.query(mealQuery, [userId]);
+
+    if (meals.length === 0) {
+      return res.json([]); // No meals for the user
+    }
+
+    const mealDetails = {};
+
+    for (const { MealID } of meals) {
+      const foodQuery = `
+        SELECT FoodName, CaloriesTotal, Quantity, NutritionType
+        FROM Food
+        WHERE MealID = ?;
+      `;
+      const drinkQuery = `
+        SELECT DrinkName, CaloriesTotal, Quantity, NutritionType
+        FROM Drink
+        WHERE MealID = ?;
+      `;
+
+      const [foods] = await connection.query(foodQuery, [MealID]);
+      const [drinks] = await connection.query(drinkQuery, [MealID]);
+
+      mealDetails[MealID] = {
+        foods,
+        drinks,
+      };
+    }
+
+    res.json(mealDetails);
+  } catch (error) {
+    console.error('Error fetching user meal details:', error);
+    res.status(500).send('An error occurred while fetching user meal details.');
+  }
+});
 
 app.get("/api/foodrink", async (req, res) => {
   try {
@@ -158,4 +216,88 @@ app.get("/api/foodrink", async (req, res) => {
 const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+app.delete('/api/delete-meal/:mealId', async (req, res) => {
+  try {
+    const { mealId } = req.params;
+
+    if (!mealId) {
+      return res.status(400).json({ error: 'Missing mealId parameter.' });
+    }
+
+    // Begin transaction
+    const conn = await connection.getConnection();
+    await conn.beginTransaction();
+
+    try {
+      // Delete all foods associated with the MealID
+      const deleteFoodQuery = `
+        DELETE FROM Food
+        WHERE MealID = ?;
+      `;
+      await conn.query(deleteFoodQuery, [mealId]);
+
+      // Delete all drinks associated with the MealID
+      const deleteDrinkQuery = `
+        DELETE FROM Drink
+        WHERE MealID = ?;
+      `;
+      await conn.query(deleteDrinkQuery, [mealId]);
+
+      // Delete the meal from the Meals table
+      const deleteMealQuery = `
+        DELETE FROM Meals
+        WHERE MealID = ?;
+      `;
+      const [result] = await conn.query(deleteMealQuery, [mealId]);
+
+      if (result.affectedRows === 0) {
+        throw new Error(`MealID ${mealId} does not exist.`);
+      }
+
+      // Commit transaction
+      await conn.commit();
+
+      res.status(200).json({ message: `MealID ${mealId} and its associated items have been deleted.` });
+    } catch (error) {
+      // Rollback transaction if any error occurs
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
+  } catch (error) {
+    console.error('Error deleting meal:', error.message || error);
+    res.status(500).send('An error occurred while deleting the meal.');
+  }
+});
+
+app.get("/api/total-calories-week", async (req, res) => {
+  try {
+    const userId = 100052;
+    const [rows] = await connection.query("CALL GetTotalCaloriesThisWeek(?);", [userId]);
+    const totalCalories = rows[0][0]?.totalCalories || 0; 
+    res.json({ totalCalories });
+  } catch (error) {
+    console.error("Error fetching total calories for the week:", error);
+    res.status(500).send("Database query failed.");
+  }
+});
+  
+app.get("/api/most-caloric-food", async (req, res) => {
+  try {
+    const userId = 100052; // Replace with dynamic user ID if needed
+    const [rows] = await connection.query("CALL GetMostCaloricFoodLastWeek(?);", [userId]);
+    // Assuming the procedure returns a single result
+    const mostCaloricFood = rows[0][0] || {}; // Replace with actual column names from the procedure result
+    res.json({
+      foodName: mostCaloricFood.FoodName || "Unknown Food",
+      calories: mostCaloricFood.CaloriesTotal || 0,
+    });
+  } catch (error) {
+    console.error("Error fetching most caloric food for the last week:", error);
+    res.status(500).send("Database query failed.");
+  }
 });

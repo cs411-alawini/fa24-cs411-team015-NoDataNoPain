@@ -30,6 +30,49 @@ const Dashboard = () => {
   const [isResultDialogVisible, setIsResultDialogVisible] = useState(false);
   const [searchData, setSearchData] = useState(null);
   const [isMealsDialogVisible, setIsMealsDialogVisible] = useState(false);
+  const [weather, setWeather] = useState({ temperature: null, location: null });
+  
+  const [weeklyCalories, setWeeklyCalories] = useState(0);
+  const [mostCaloricFood, setMostCaloricFood] = useState({ foodName: "Unknown", calories: 0 });
+
+  useEffect(() => {
+    const fetchWeeklyCalories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/api/total-calories-week");
+        setWeeklyCalories(response.data.totalCalories || 0);
+      } catch (error) {
+        console.error("Error fetching weekly calories:", error);
+      }
+    };
+
+    const fetchMostCaloricFood = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/api/most-caloric-food");
+        setMostCaloricFood({
+          foodName: response.data.foodName || "Unknown",
+          calories: response.data.calories || 0,
+        });
+      } catch (error) {
+        console.error("Error fetching most caloric food:", error);
+      }
+    };
+
+    fetchWeeklyCalories();
+    fetchMostCaloricFood();
+  }, []);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await axios.get("http://localhost:5001/api/weather");
+        setWeather(response.data);
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   const [exercises, setExercises] = useState([]);
   const [meals, setMeals] = useState({
@@ -155,6 +198,8 @@ const Dashboard = () => {
     setMeals(updatedMeals); // Update the meals list
   };
 
+  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -193,7 +238,7 @@ const Dashboard = () => {
       <header className="header">
         <div className="profile">
           <span className="profile-icon">👤</span>
-          <span className="username">Username</span>
+          <span className="username">matthewyoung</span>
           <button className="search-btn" onClick={showSearchDialog}>
             🔍 Search
           </button>
@@ -330,8 +375,13 @@ const Dashboard = () => {
           </div>
           <div className="module-box">
             <h4>☀️ Weather</h4>
-            <p>Sunny 90°F</p>
-            <small>Best day to workout</small>
+            {weather.temperature !== null ? (
+              <p>
+                {weather.location}: {weather.temperature}°C
+              </p>
+            ) : (
+              <p>Loading weather...</p>
+            )}
           </div>
           <div className="module-box">
             <h4>🍎 Calories</h4>
@@ -342,6 +392,11 @@ const Dashboard = () => {
               ></div>
             </div>
             <small>600 / 2000 kcal</small>
+            <p>Total calories this week: <strong>{weeklyCalories}</strong> kcal</p>
+            <p>
+              Most caloric food last week: <strong>{mostCaloricFood.foodName}</strong> (
+              {mostCaloricFood.calories} kcal)
+            </p>
           </div>
           <div className="module-box">
             <h4>💡 Quote of the Day</h4>
