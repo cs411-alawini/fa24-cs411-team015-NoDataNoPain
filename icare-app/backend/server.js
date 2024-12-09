@@ -278,13 +278,16 @@ app.get("/api/total-calories-week", async (req, res) => {
   try {
     const userId = 100052;
     const [rows] = await connection.query("CALL GetTotalCaloriesThisWeek(?);", [userId]);
-    const totalCalories = rows[0][0]?.totalCalories || 0; 
+    const totalCalories = rows[0][0]['COALESCE(SUM(F.CaloriesTotal), 0) + COALESCE(SUM(D.CaloriesTotal), 0)'] || 0;
+
     res.json({ totalCalories });
   } catch (error) {
     console.error("Error fetching total calories for the week:", error);
     res.status(500).send("Database query failed.");
   }
 });
+
+
   
 app.get("/api/most-caloric-food", async (req, res) => {
   try {
